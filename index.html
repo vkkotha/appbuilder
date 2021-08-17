@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two grids demo</title>
+
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@5.7.12/css/framework7.bundle.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@2.0.0/dist/gridstack.min.css"/>
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@2.0.0/dist/gridstack-extra.min.css"/>-->
+  <link rel="stylesheet" href="styles/css/gridstack-col20.css"/>
+  <link rel="stylesheet" href="styles/css/app.css"/>
+  
+  <script src="https://cdn.jsdelivr.net/npm/framework7@5.7.12/js/framework7.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@2.0.0/dist/gridstack.all.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+  <div id="app">
+    <div class="container-fluid" id="view view-main">
+      <div class="page-content">
+        <!-- appbuilder-toolbar -->
+        <div class="row ab-toolbar">
+            <div class="col-md-12 col-100">
+                <a onClick="toggleFloat(this, 0)" class="btn btn-primary" href="#">float: false</a>
+                <a onClick="compact(0)" class="btn btn-primary" href="#">Compact</a>
+            </div>
+        </div>
+
+        <!-- appbuilder-editor -->
+        <div class="row ab-editor">
+          <!-- appbuilder-editor-content -->
+          <div class="col-md-9 col-75 ab-editor-content">
+            <div class="grid-stack grid-stack-12 "></div>
+          </div>
+          <!-- appbuilder-editor-controls -->
+          <div id="ab-editor-controls" class="col-md-3 col-25 ab-editor-controls">
+            <div class="row ab-editor-controls-components">
+              <div v-for="comp in components" class="col-md-12 col-100">
+                <div class="grid-stack-item" :data-gs-width=comp.grid.width :data-gs-height=comp.grid.height>
+                  <div class="grid-stack-item-content"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/events.js"></script>
+  <script src="js/app.js"></script>
+  <script type="text/javascript">
+    var options = {
+      column: 22,
+      minRow: 15, // don't collapse when empty
+      cellHeight: 50,
+      disableOneColumnMode: true,
+      float: true,
+      dragIn: '.ab-editor-controls .grid-stack-item', // class that can be dragged from outside
+      dragInOptions: { revert: 'invalid', scroll: false, appendTo: 'body', helper: 'clone' }, // clone
+      removable: '.trash', // drag-out delete class
+      removeTimeout: 100,
+      flat: false,
+      acceptWidgets: function(el) { return true; } // function example, else can be simple: true | false | '.someClass' value
+    };
+    var grids = GridStack.initAll(options);
+    // grids[1].float(true);
+
+    var items = [
+      {x: 0, y: 0, width: 2, height: 2},
+      {x: 3, y: 1, width: 1, height: 2},
+      {x: 4, y: 1, width: 1, height: 1},
+      {x: 2, y: 3, width: 3, height: 1, maxWidth: 3, id: 'special', text: 'has maxWidth=3'},
+      {x: 2, y: 5, width: 1, height: 1}
+    ];
+
+    grids.forEach(function (grid, i) {
+      addEvents(grid, i);
+      grid.batchUpdate();
+      items.forEach(function (node) {
+        grid.addWidget('<div><div class="grid-stack-item-content">' + (node.text? node.text : '') + '</div></div>', node);
+      });
+      grid.commit();
+    });
+
+    function toggleFloat(button, i) {
+      grids[i].float(! grids[i].getFloat());
+      button.innerHTML = 'float: ' + grids[i].getFloat();
+    }
+
+    function compact(i) {
+      grids[i].compact();
+    }
+  </script>
+</body>
+</html>
